@@ -3,12 +3,12 @@ var u = require('underscore');
 
 function readCsvFile(data) {
   var kvp = [];
-  data.split('\r\n').forEach(function(item) {
+  data.split(/\s+/).forEach(function(item) {
     if(!item) { return; }
     var k = item.split(',');
     kvp.push({
-      name: k[0].toLowerCase().replace(/\s+/, ''),
-      class: k[1].toLowerCase().replace(/\s+/, ''),
+      name: k[0].toLowerCase(),
+      class: k[1].toLowerCase(),
     });
   });
   var uq = u.uniq(kvp);
