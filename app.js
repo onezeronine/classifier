@@ -6,7 +6,7 @@ var u = require('underscore');
  * Reads the csv file and
  *  creates a key value pair (kvp) array
  * @param {string} data
- * @returns array of kvp
+ * @return {array} array of kvp
  */
 function readCsvFile(data) {
   var kvp = [];
@@ -26,7 +26,7 @@ function readCsvFile(data) {
  * @description
  * Gets the model object
  * @param {object} model - Empty object
- * @returns model
+ * @returns {object} model
  */
 function getModel(model) {
   // TODO refactor model
@@ -41,9 +41,9 @@ function getModel(model) {
 
       kvp.features.forEach(function(feature) {
         // find the feature in the model
-        var selectedFeature = u.find(model[className].features, 
+        var selectedFeature = u.find(model[className].features,
           function(m) {
-            return m.name === feature.name && 
+            return m.name === feature.name &&
               m.value === feature.value;
           });
 
@@ -55,12 +55,10 @@ function getModel(model) {
         // compute using laplacian smoothing
         //  based on the counts
         //  then compute the product of the score
-        score[className].value *= (selectedFeature.count + 1) 
-          / (classCount + vocabularyCount);
+        score[className].value *= (selectedFeature.count + 1) / (classCount + vocabularyCount);
       });
-
     });
-    
+
     // find the max score among the classes
     var max = 0;
     var selectedClass = null;
@@ -83,11 +81,11 @@ function getModel(model) {
  * Trains the model based on the training set and classes
  * @param {array} trainingSet - contains kvp with features
  * @param {array} classes
- * @returns model
+ * @returns {object} model
  */
 function trainModel(trainingSet, classes) {
   var model = getModel({});
-  
+
   //set the default value for each class in the model
   classes.forEach(function(className) {
     model[className] = { features: [], totalCount: 0 };
@@ -106,7 +104,7 @@ function trainModel(trainingSet, classes) {
     //for each feature, set the frequency in the model
     for(var i = 0; i < features.length; ++i) {
       var selectedFeature = u.find(featureClass, function(m) {
-        return m.name === features[i].name && 
+        return m.name === features[i].name &&
           m.value === features[i].value;
       });
 
@@ -129,7 +127,7 @@ function trainModel(trainingSet, classes) {
  *  based on the number of classes
  * @param {object} model
  * @param {array} testSet
- * @returns resulting array of the results (tp,fp,tn,fn)
+ * @returns {array} resulting array of the results (tp,fp,tn,fn)
  */
 function evaluateModel(model, testSet) {
   var matrix = {};
@@ -151,7 +149,7 @@ function evaluateModel(model, testSet) {
  * @description
  * Extracts the features from a key value pair
  * @param {object} kvp - Key value pair
- * @returns kvp with features
+ * @returns {object} kvp with features
  */
 function extractFeatures(kvp) {
   var alphabet = 'abcdefghijklmnopqrstuvwxyz';
@@ -159,15 +157,15 @@ function extractFeatures(kvp) {
   kvp.features.push({ name: 'firstLetter', value: kvp.name[0] });
   kvp.features.push({ name: 'lastLetter', value: kvp.name.slice(-1) });
   for(var i = 0; i < alphabet.length; ++i) {
-    kvp.features.push({ 
-      name: 'has(' + alphabet[i] + ')', 
-      value: kvp.name.indexOf(alphabet[i]) >= 0 
+    kvp.features.push({
+      name: 'has(' + alphabet[i] + ')',
+      value: kvp.name.indexOf(alphabet[i]) >= 0
     });
   }
   for(var j = 0; j < alphabet.length; ++j) {
-    kvp.features.push({ 
-      name: 'count(' + alphabet[j] + ')', 
-      value: kvp.name.split(alphabet[j]).length - 1 
+    kvp.features.push({
+      name: 'count(' + alphabet[j] + ')',
+      value: kvp.name.split(alphabet[j]).length - 1
     });
   }
   return kvp;
@@ -177,7 +175,7 @@ function extractFeatures(kvp) {
  * @description
  * Shuffles the array
  * @param {array} o
- * @returns shuffled array
+ * @returns {array} shuffled array
  */
 function shuffle(o) {
   return o.sort(function() { return 0.5 - Math.random(); });
@@ -228,7 +226,7 @@ fs.readFile('names.csv', 'utf-8', function(err, data) {
 
   //get matrix results the model
   var result = evaluateModel(model, testSet);
-  
+
   //print the precision, recall and f measure
   printEvaluationResults(classes, result);
 });
